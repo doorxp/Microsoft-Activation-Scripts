@@ -223,8 +223,8 @@ cmd /c "%psc% $ExecutionContext.SessionState.LanguageMode"
 REM check LanguageMode
 
 cmd /c "%psc% "$ExecutionContext.SessionState.LanguageMode"" | findstr /i "ConstrainedLanguage RestrictedLanguage NoLanguage" %nul1% && (
-echo FullLanguage mode not found in PowerShell. Aborting...
-echo If you have applied restrictions on Powershell then undo those changes.
+echo 在PowerShell中找不到完整语言模式。中止...
+echo 如果您对Powershell应用了限制，请撤消这些更改。
 echo:
 set fixes=%fixes% %mas%fix_powershell
 call :dk_color2 %Blue% "查看此网页寻求帮助 -" %_Yellow% " %mas%fix_powershell"
@@ -234,7 +234,7 @@ goto dk_done
 REM check Powershell core version
 
 cmd /c "%psc% "$PSVersionTable.PSEdition"" | find /i "Core" %nul1% && (
-echo Windows Powershell is needed for MAS but it seems to be replaced with Powershell core. Aborting...
+echo MAS需要Windows Powershell，但它似乎被Powershell核心所取代。中止...
 goto dk_done
 )
 
@@ -660,7 +660,7 @@ ClipUp.exe
 ) do (
 if not exist %SysPath%\%%# (
 %eline%
-echo [%SysPath%\%%#] 文件丢失, 中断中...
+echo [%SysPath%\%%#] 文件丢失, 中止中...
 echo:
 if not defined results (
 call :dk_color %Blue% "返回主菜单，选择故障排除，然后运行DISM还原和SFC扫描选项。"
@@ -863,7 +863,7 @@ call :hwiddata ticket
 copy /y /b "%tdir%\GenuineTicket" "%tdir%\GenuineTicket.xml" %nul%
 
 if not exist "%tdir%\GenuineTicket.xml" (
-call :dk_color %Red% "生成 GenuineTicket.xml            [失败, 中断中...]"
+call :dk_color %Red% "生成 GenuineTicket.xml            [失败, 中止中...]"
 echo [%encoded%]
 if exist "%tdir%\Genuine*" del /f /q "%tdir%\Genuine*" %nul%
 goto :dl_final
@@ -979,7 +979,7 @@ licensing.mp.microsoft.com
 ) do (
 findstr /i "%%#" "%SysPath%\drivers\etc\hosts" %nul1% && set "hosfail= [%%# Blocked in Hosts]"
 )
-call :dk_color %Red% "Checking Licensing Servers              [Failed to Connect]!hosfail!"
+call :dk_color %Red% "正在检查授权服务器              [连接失败]!hosfail!"
 set fixes=%fixes% %mas%licensing-servers-issue
 call :dk_color2 %Blue% "查看此网页寻求帮助 -" %_Yellow% " %mas%licensing-servers-issue"
 )
@@ -993,14 +993,14 @@ if %keyerror% EQU 0 if not defined _perm if defined _int (
 reg query "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" /v DisableWindowsUpdateAccess %nul2% | find /i "0x1" %nul% && set wublock=1
 reg query "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" /v DoNotConnectToWindowsUpdateInternetLocations %nul2% | find /i "0x1" %nul% && set wublock=1
 if defined wublock (
-call :dk_color %Red% "Checking Update Blocker In Registry     [找到]"
-call :dk_color %Blue% "HWID activation needs working Windows updates, if you have used any tool to block updates, undo it."
+call :dk_color %Red% "正在检查注册表中的更新阻止程序     [找到]"
+call :dk_color %Blue% "HWID激活需要工作的Windows更新，如果您使用了任何工具阻止更新，请撤消它。"
 )
 
 reg query "HKLM\SOFTWARE\Policies\Microsoft\WindowsStore" /v DisableStoreApps %nul2% | find /i "0x1" %nul% && (
 set storeblock=1
-call :dk_color %Red% "Checking Store Blocker In Registry      [找到]"
-call :dk_color %Blue% "If you have used any tool to block Store, undo it."
+call :dk_color %Red% "正在检查注册表中的存储阻止程序      [找到]"
+call :dk_color %Blue% "如果您使用了任何工具来阻止存储，请撤消它。"
 )
 
 set wcount=0
@@ -1014,13 +1014,13 @@ reg query HKLM\SYSTEM\CurrentControlSet\Services\wuauserv\%%G %nul% || (set wuco
 
 if defined wucorrupt (
 set error=1
-call :dk_color %Red% "Checking Windows Update Registry        [Corruption Found]"
+call :dk_color %Red% "正在检查Windows Update注册表        [找到变体]"
 if !wcount! GTR 2 (
-call :dk_color %Red% "Windows seems to be infected with Mal%w%ware."
+call :dk_color %Red% "Windows似乎感染了 Mal%w%ware."
 set fixes=%fixes% %mas%remove_mal%w%ware
 call :dk_color2 %Blue% "查看此网页寻求帮助 -" %_Yellow% " %mas%remove_mal%w%ware"
 ) else (
-call :dk_color %Blue% "HWID activation needs working Windows updates, if you have used any tool to block updates, undo it."
+call :dk_color %Blue% "HWID激活需要工作的Windows更新，如果您使用了任何工具阻止更新，请撤消它。"
 )
 ) else (
 %psc% "Start-Job { Start-Service wuauserv } | Wait-Job -Timeout 20 | Out-Null"
@@ -1028,8 +1028,8 @@ sc query wuauserv | find /i "RUNNING" %nul% || (
 set error=1
 set wuerror=1
 sc start wuauserv %nul%
-call :dk_color %Red% "Starting Windows Update Service         [失败] [!errorlevel!]"
-call :dk_color %Blue% "HWID activation needs working Windows updates, if you have used any tool to block updates, undo it."
+call :dk_color %Red% "正在启动Windows更新服务         [失败] [!errorlevel!]"
+call :dk_color %Blue% "HWID激活需要工作的Windows更新，如果您使用了任何工具阻止更新，请撤消它。"
 )
 )
 )
@@ -1041,7 +1041,7 @@ call :dk_color %Blue% "HWID activation needs working Windows updates, if you hav
 if %keyerror% EQU 0 if not defined _perm if defined _int (
 if not defined wucorrupt if not defined wublock if not defined wuerror if not defined storeblock if not defined resfail (
 echo "%error_code%" | findstr /i "0x80072e 0x80072f 0x800704cf 0x87e10bcf 0x800705b4" %nul% && (
-call :dk_color %Red% "Checking Internet Issues                [找到] %error_code%"
+call :dk_color %Red% "检查Internet问题                [找到] %error_code%"
 set fixes=%fixes% %mas%licensing-servers-issue
 call :dk_color2 %Blue% "查看此网页寻求帮助 -" %_Yellow% " %mas%licensing-servers-issue"
 )
@@ -1052,12 +1052,12 @@ call :dk_color2 %Blue% "查看此网页寻求帮助 -" %_Yellow% " %mas%licensing-servers
 
 echo:
 if defined _perm (
-call :dk_color %Green% "%winos% is permanently activated with a digital license."
+call :dk_color %Green% "%winos% 已使用数字许可证永久激活。"
 ) else (
-call :dk_color %Red% "Activation Failed %error_code%"
+call :dk_color %Red% "激活失败 %error_code%"
 if defined notworking (
-call :dk_color %Blue% "At the time of writing, HWID Activation is not supported for this product."
-call :dk_color %Blue% "Use TSforge activation option from the main menu instead."
+call :dk_color %Blue% "在撰写本文时，此产品不支持HWID激活。"
+call :dk_color %Blue% "请改用主菜单中的TSforge激活选项。"
 ) else (
 if not defined error call :dk_color %Blue% "%_fixmsg%"
 set fixes=%fixes% %mas%troubleshoot
@@ -1074,9 +1074,9 @@ echo:
 if defined regionchange (
 %psc% "Set-WinHomeLocation -GeoId %nation%" %nul%
 if !errorlevel! EQU 0 (
-echo Restoring Windows Region                [成功]
+echo 还原Windows区域               [成功]
 ) else (
-call :dk_color %Red% "Restoring Windows Region                [失败] [%name% - %nation%]"
+call :dk_color %Red% "还原Windows区域               [失败] [%name% - %nation%]"
 )
 )
 
@@ -1251,7 +1251,7 @@ echo %keyecho% %~1 [成功]
 ) else (
 call :dk_color %Red% "%keyecho% %~1 [失败] %keyerror%"
 if not defined error (
-if defined altapplist call :dk_color %Red% "Activation ID not found for this key."
+if defined altapplist call :dk_color %Red% "找不到此密钥的激活ID。"
 call :dk_color %Blue% "%_fixmsg%"
 set showfix=1
 )
@@ -1466,8 +1466,8 @@ if not exist %SysPath%\%_slexe% if not exist %SysPath%\alg.exe (set "results=%re
 )
 
 if not "%results%%pupfound%"=="" (
-if defined pupfound call :dk_color %Gray% "Checking PUP Activators                 [Found%pupfound%]"
-if defined results call :dk_color %Red% "Checking Probable Mal%w%ware Infection..."
+if defined pupfound call :dk_color %Gray% "检查PUP激活器                 [找到%pupfound%]"
+if defined results call :dk_color %Red% "检查可能性 Mal%w%ware 注入..."
 if defined results call :dk_color %Red% "%results%"
 set fixes=%fixes% %mas%remove_mal%w%ware
 call :dk_color2 %Blue% "查看此网页寻求帮助 -" %_Yellow% " %mas%remove_mal%w%ware"
@@ -1494,8 +1494,8 @@ call :dk_chkmal
 sc query Null %nul% || (
 set error=1
 set showfix=1
-call :dk_color %Red% "Checking Sandboxing                     [Found, script may not work properly.]"
-call :dk_color %Blue% "If you are using any third-party antivirus, check if it is blocking the script."
+call :dk_color %Red% "检查沙盒                     [已找到，脚本可能无法正常工作。]"
+call :dk_color %Blue% "如果您正在使用任何第三方防病毒软件，请检查它是否阻止了脚本。"
 echo:
 )
 
@@ -1519,7 +1519,7 @@ if defined _corrupt (if defined serv_cor (set "serv_cor=!serv_cor! %%#") else (s
 if defined serv_cor (
 set error=1
 set showfix=1
-call :dk_color %Red% "Checking Corrupt Services               [%serv_cor%]"
+call :dk_color %Red% "检查损坏的服务               [%serv_cor%]"
 )
 
 ::========================================================================================================================================
@@ -1554,11 +1554,11 @@ if defined serv_cste (set "serv_cste=!serv_cste! %%#") else (set "serv_cste=%%#"
 )
 )
 
-if defined serv_csts call :dk_color %Gray% "Enabling Disabled Services              [成功] [%serv_csts%]"
+if defined serv_csts call :dk_color %Gray% "启用禁用的服务              [成功] [%serv_csts%]"
 
 if defined serv_cste (
 set error=1
-call :dk_color %Red% "Enabling Disabled Services              [失败] [%serv_cste%]"
+call :dk_color %Red% "启用禁用的服务              [失败] [%serv_cste%]"
 )
 
 ::========================================================================================================================================
@@ -1584,9 +1584,9 @@ if defined checkerror if defined serv_e (set "serv_e=!serv_e!, %%#-!errorcode!")
 
 if defined serv_e (
 set error=1
-call :dk_color %Red% "Starting Services                       [失败] [%serv_e%]"
+call :dk_color %Red% "启动服务                       [失败] [%serv_e%]"
 echo %serv_e% | findstr /i "ClipSVC-1058 sppsvc-1058" %nul% && (
-call :dk_color %Blue% "Reboot your machine using the restart option to fix this error."
+call :dk_color %Blue% "使用重启选项重新启动计算机以修复此错误。"
 set showfix=1
 )
 echo %serv_e% | findstr /i "sppsvc-1060" %nul% && (
@@ -1603,7 +1603,7 @@ set showfix=1
 if defined safeboot_option (
 set error=1
 set showfix=1
-call :dk_color2 %Red% "Checking Boot Mode                      [%safeboot_option%] " %Blue% "[Safe mode found. Run in normal mode.]"
+call :dk_color2 %Red% "检查启动模式                      [%safeboot_option%] " %Blue% "[已找到安全模式。在正常模式下运行。]"
 )
 
 
